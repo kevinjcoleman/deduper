@@ -1,0 +1,39 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    coderay (1.1.1)
+    coolline (0.5.0)
+      unicode_utils (~> 1.4)
+    decisiontree (0.5.0)
+    ffi (1.9.14)
+    levenshtein-ffi (1.1.0)
+      ffi (~> 1.9)
+    method_source (0.8.2)
+    ngramdistance-ffi (1.0.1)
+      ffi
+    pry (0.10.4)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-coolline (0.2.5)
+      coolline (~> 0.5)
+    rake (11.3.0)
+    slop (3.6.0)
+    unicode_utils (1.4.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  decisiontree
+  levenshtein-ffi
+  ngramdistance-ffi
+  pry
+  pry-coolline
+  rake
+
+RUBY VERSION
+   ruby 2.2.5p319
+
+BUNDLED WITH
+   1.12.5
