@@ -1,1 +1,5 @@
+# Ignore all files under tmp directory
 tmp/*
+
+# But keep the tmp directory in the repo.
+!tmp/.gitkeep
