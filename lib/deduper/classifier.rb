@@ -3,11 +3,10 @@ Bundler.require
 
 class Classifier
   attr_accessor :dec_tree, :training_set
-  default_fields = Modulerizer::FIELDS.flat_map {|field| ["#{field}_match", "#{field}_ngram_distance", "#{field}_edit_distance"]}
-  additional_fields = %w(full_name_match
-                         full_name_ngram_distance
-                         full_name_edit_distance
-                         match_status)
+  default_fields = Modulerizer::FIELDS.flat_map {|field| ["#{field}_match"] } #, "#{field}_ngram_distance", "#{field}_edit_distance"]}
+  additional_fields = %w(full_name_match)
+                         #full_name_ngram_distance
+                         #full_name_edit_distance)
 
   KEYS = (default_fields + additional_fields)
 
@@ -25,7 +24,7 @@ class Classifier
   def obtain_set
     @training_set = []
     CSV.foreach("lib/training_data/training_data.csv", headers: true) do |row|
-      @training_set << row.to_hash.values.map(&:to_i)
+      @training_set << row.to_hash.values.map(&:to_f)
     end
   end
 
