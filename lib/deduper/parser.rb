@@ -2,7 +2,7 @@ require 'bundler/setup'
 Bundler.require
 
 class Parser
-  attr_accessor :file, :output_file, :match_count, :count, :og_line_count
+  attr_accessor :file, :output_file, :match_count, :count, :og_line_count, :rows
   @@run_count = 0
 
   def initialize(path_to_file)
@@ -10,21 +10,22 @@ class Parser
     @@run_count += 1
     @match_count = 0
     @output_file = CSV.open("tmp/job_#{Time.now.to_i}.csv", "wb")
-    @count = CSV.open(path_to_file, headers: true).count
+    @rows = CSV.foreach(file, headers: true).map {|row| row.to_hash }
+    @count = @rows.size
   end
 
   def parse!
-    yield_csv_file do |row, i|
+    yield_csv_rows do |row, i|
       @og_line_count = i
       puts count if count % 50 == 0
-      yield_csv_file(row) { |og_row, searched_row|  check_for_matches(og_row, searched_row) }
+      puts Benchmark.measure { yield_csv_rows(row) { |og_row, searched_row|  check_for_matches(og_row, searched_row) } }
       @count -= 1
     end
     output_file.close
   end
 
-  def yield_csv_file(og_row=nil)
-    CSV.foreach(file, headers: true).with_index(1) do |row, i|
+  def yield_csv_rows(og_row=nil)
+    rows.each_with_index do |row, i|
       next if og_line_count && og_line_count >= i
       og_row ? yield(og_row, row) : yield(row, i)
     end
