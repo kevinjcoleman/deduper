@@ -2,12 +2,11 @@ require 'bundler/setup'
 Bundler.require
 
 class Parser
-  attr_accessor :file, :classifier, :output_file, :match_count, :count, :og_line_count
+  attr_accessor :file, :output_file, :match_count, :count, :og_line_count
   @@run_count = 0
 
   def initialize(path_to_file)
     @file = path_to_file
-    @classifier = Classifier.new
     @@run_count += 1
     @match_count = 0
     @output_file = CSV.open("tmp/job_#{Time.now.to_i}.csv", "wb")
@@ -18,7 +17,7 @@ class Parser
     yield_csv_file do |row|
       @og_line_count = $.
       puts count if count % 50 == 0
-      yield_csv_file(row) { |og_row, searched_row| check_for_matches(og_row, searched_row) }
+      yield_csv_file(row) { |og_row, searched_row|  check_for_matches(og_row, searched_row) }
       @count -= 1
     end
     output_file.close
@@ -44,5 +43,9 @@ class Parser
       puts "--------"
       @match_count += 1
     end
+  end
+
+  def classifier
+    @classifier ||= Classifier.new
   end
 end

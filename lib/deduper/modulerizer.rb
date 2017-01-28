@@ -6,16 +6,16 @@ class Modulerizer
   PERSONAL_FIELDS = %w(first_name
                      middle_name
                      last_name
-                     born_at)
+                     born_at).freeze
   REGISTERED_ADDRESS_FIELDS = %w(registered_address1
                                  registered_address2
                                  registered_address3
                                  registered_city
                                  registered_state
                                  registered_zip
-                                 registered_country_code)
+                                 registered_country_code).freeze
 
-  FIELDS = (PERSONAL_FIELDS + REGISTERED_ADDRESS_FIELDS)
+  FIELDS = (PERSONAL_FIELDS + REGISTERED_ADDRESS_FIELDS).freeze
 
   def initialize(row1, row2)
     @row1, @row2 = row1, row2
@@ -47,12 +47,11 @@ class Modulerizer
   end
 
   def compare_field(field)
-    if row1[field].nil? && row2[field].nil?
-      0.75
-    elsif row1[field].nil? || row2[field].nil?
-      0.5
+    field1, field2 = row1[field], row2[field]
+    if !field1 || !field2
+      !field1 && !field2 ? 0.75 : 0.5
     else
-      row1[field] == row2[field] ? 1.0 : 0
+      field1.equal?(field2) ? 1.0 : 0
     end
   end
 
