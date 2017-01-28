@@ -14,8 +14,8 @@ class Parser
   end
 
   def parse!
-    yield_csv_file do |row|
-      @og_line_count = $.
+    yield_csv_file do |row, i|
+      @og_line_count = i
       puts count if count % 50 == 0
       yield_csv_file(row) { |og_row, searched_row|  check_for_matches(og_row, searched_row) }
       @count -= 1
@@ -24,9 +24,9 @@ class Parser
   end
 
   def yield_csv_file(og_row=nil)
-    CSV.foreach(file, headers: true) do |row|
-      next if og_line_count && og_line_count >= $.
-      og_row ? yield(og_row, row) : yield(row)
+    CSV.foreach(file, headers: true).with_index(1) do |row, i|
+      next if og_line_count && og_line_count >= i
+      og_row ? yield(og_row, row) : yield(row, i)
     end
   end
 
