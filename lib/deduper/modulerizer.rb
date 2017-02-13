@@ -51,7 +51,7 @@ class Modulerizer
     if !field1 || !field2
       !field1 && !field2 ? 0.75 : 0.5
     else
-      field1.equal?(field2) ? 1.0 : 0
+      field1.eql?(field2) ? 1.0 : 0
     end
   end
 

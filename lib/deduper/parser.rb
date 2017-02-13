@@ -2,7 +2,7 @@ require 'bundler/setup'
 Bundler.require
 
 class Parser
-  attr_accessor :file, :output_file, :match_count, :count, :og_line_count, :rows
+  attr_accessor :file, :output_file, :match_count, :count, :og_line_count, :rows, :timer
   @@run_count = 0
 
   def initialize(path_to_file)
@@ -12,14 +12,16 @@ class Parser
     @output_file = CSV.open("tmp/job_#{Time.now.to_i}.csv", "wb")
     @rows = CSV.foreach(file, headers: true).map {|row| row.to_hash }
     @count = @rows.size
+    @timer = ScriptTimer.new(count, "rows", 500)
   end
 
   def parse!
+    output_file << RowOutputer.headers
     yield_csv_rows do |row, i|
       @og_line_count = i
       puts count if count % 50 == 0
-      puts Benchmark.measure { yield_csv_rows(row) { |og_row, searched_row|  check_for_matches(og_row, searched_row) } }
-      @count -= 1
+      yield_csv_rows(row) { |og_row, searched_row|  check_for_matches(og_row, searched_row) }
+      timer.row
     end
     output_file.close
   end
@@ -35,13 +37,8 @@ class Parser
     modulized = Modulerizer.new(og_row, searched_row).compare
     result = classifier.predict(modulized)
     if result == 1
-      output_file << og_row.to_hash.values.unshift(match_count)
-      output_file << searched_row.to_hash.values.unshift(match_count)
+      output_file << RowOutputer.new(og_row, searched_row, match_count).output
       output_file.flush
-      puts "Match"
-      puts og_row
-      puts searched_row
-      puts "--------"
       @match_count += 1
     end
   end
