@@ -6,6 +6,8 @@ gem "pry"
 gem "pry-coolline"
 gem "rake"
 gem "rspec"
+gem "hotwater"
+gem 'celluloid'
 
 #gem 'ngramdistance-ffi', :require => 'ngramdistance'
 #gem 'levenshtein-ffi', :require => 'levenshtein'

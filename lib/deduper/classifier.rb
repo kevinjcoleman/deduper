@@ -3,12 +3,14 @@ Bundler.require
 
 class Classifier
   attr_accessor :dec_tree, :training_set
-  default_fields = Modulerizer::FIELDS.flat_map {|field| ["#{field}_match"] } #, "#{field}_ngram_distance", "#{field}_edit_distance"]}
-  additional_fields = %w(full_name_match)
+  additional_fields = %w(full_name_match
+                         full_address_match
+                         born_at
+                         suffix)
                          #full_name_ngram_distance
                          #full_name_edit_distance)
 
-  KEYS = (default_fields + additional_fields)
+  KEYS = (additional_fields)
 
   def initialize
     @dec_tree = setup_tree
@@ -18,7 +20,7 @@ class Classifier
 
   def setup_tree
     obtain_set
-    DecisionTree::ID3Tree.new(KEYS, training_set, 1, :continuous)
+    DecisionTree::ID3Tree.new(KEYS, training_set, 0, :continuous)
   end
 
   def obtain_set

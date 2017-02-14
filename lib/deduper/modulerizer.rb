@@ -2,33 +2,23 @@ require 'bundler/setup'
 Bundler.require
 
 class Modulerizer
-  attr_accessor :row1, :row2, :output, :full_name1, :full_name2
-  PERSONAL_FIELDS = %w(first_name
-                     middle_name
-                     last_name
-                     born_at).freeze
-  REGISTERED_ADDRESS_FIELDS = %w(registered_address1
-                                 registered_address2
-                                 registered_address3
-                                 registered_city
-                                 registered_state
-                                 registered_zip
-                                 registered_country_code).freeze
-
-  FIELDS = (PERSONAL_FIELDS + REGISTERED_ADDRESS_FIELDS).freeze
+  attr_accessor :row1, :row2, :output, :full_name1, :full_name2, :full_address1, :full_address2
 
   def initialize(row1, row2)
     @row1, @row2 = row1, row2
     @full_name1, @full_name2 = "#{row1["first_name"]} #{row1["middle_name"]} #{row1["last_name"]}", "#{row2["first_name"]} #{row2["middle_name"]} #{row2["last_name"]}"
+    @full_address1 = "#{row1["registered_address1"]} #{row1["registered_address2"]} #{row1["registered_address3"]} #{row1["registered_city"]} #{row1["registered_state"]} #{row1["registered_zip"]} #{row1["registered_country_code"]}"
+    @full_address2 = "#{row2["registered_address1"]} #{row2["registered_address2"]} #{row2["registered_address3"]} #{row2["registered_city"]} #{row2["registered_state"]} #{row2["registered_zip"]} #{row2["registered_country_code"]}"
     @output = []
   end
 
   def compare
     #Compare fields for equality
-    FIELDS.each do |field|
-      output << compare_field(field)
-    end
-    output << (full_name1 == full_name2 ? 1.0 : 0)
+    output << Hotwater.levenshtein_distance(full_name1, full_name2)
+    output << Hotwater.levenshtein_distance(full_address1, full_address2)
+    output << compare_field("born_at")
+    output << compare_field("suffix")
+
 
     #Compare fields for edit distance
     #FIELDS.each do |field|
@@ -53,15 +43,5 @@ class Modulerizer
     else
       field1.eql?(field2) ? 1.0 : 0
     end
-  end
-
-  def ngram_distance(field)
-    return 0 if row1[field].nil? || row2[field].nil?
-    NGramDistance.distance(row1[field], row2[field])
-  end
-
-  def edit_distance(field)
-    return 20 if row1[field].nil? || row2[field].nil?
-    Levenshtein.distance(row1[field], row2[field])
   end
 end
