@@ -47,6 +47,7 @@ class Parser
       @threads << parser_thread.future.parse!
     end
     @threads.map(&:value)
+    output_file.close
   end
 
   def check_for_matches(og_row, searched_row)
